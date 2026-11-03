@@ -1,0 +1,25 @@
+﻿{
+  "name": "dsh-haloflux-bridge",
+  "version": "0.1.0",
+  "description": "Headless session relay: pushes the live session (tokens, tools, turn/step, running state) from the Harness Web client to a loopback event stream, so the HALOFLUX desktop wallpaper in Lively can be session-driven. Renders zero pixels.",
+  "license": "SEE LICENSE IN LICENSE",
+  "type": "module",
+  "keywords": ["dsh", "dsh-plugin", "deepseek-harness", "haloflux", "bridge"],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json"
+  },
+  "files": ["index.js", "client.js", "cordis.patch.yml", "locale/*.json"],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-session"]
+    }
+  }
+}
+

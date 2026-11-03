@@ -1,0 +1,7 @@
+# copyrighted user wallpaper — never commit
+wallpaper/photo.png
+# dev screenshots
+_*.png
+# deps / build noise
+node_modules/
+*.log

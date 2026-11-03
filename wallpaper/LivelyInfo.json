@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "version": 0,
+  "type": "web",
+  "title": "HALOFLUX Ring",
+  "desc": "HALOFLUX 实时光环（纯动画档）。原Canvas引擎脱离浏览器窗口、作为桌面壁纸层的移植。",
+  "author": "Ryder191 (original HALOFLUX) / Ke-wood (DSH port)",
+  "contact": "https://github.com/Ke-wood/dsh-haloflux",
+  "license": "PolyForm Noncommercial 1.0.0",
+  "fileName": "index.html",
+  "arguments": "",
+  "IsAbsolutePath": false,
+  "tags": ["canvas", "scifi", "ring", "light", "minimal"]
+}

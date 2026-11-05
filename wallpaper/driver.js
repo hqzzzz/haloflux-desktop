@@ -148,6 +148,45 @@
       : 0.30 + 0.16 * Math.sin(t / 3600);
   }, 250);
 
+  /* ---- keep-alive: after a long suspension (Lively occlusion pause / OS sleep)
+     the renderer can silently stop ticking rAF: the window keeps showing the
+     last painted frame and no error fires. setInterval keeps running even when
+     rAF is parked (throttled but alive), so use it as a watchdog: if the frame
+     heartbeat stalls for >8s while the page is visible, re-prime the loop. ---- */
+  var lastBeat = performance.now();
+  (function beat() {
+    lastBeat = performance.now();
+    requestAnimationFrame(beat);
+  })();
+  setInterval(function () {
+    if (document.hidden) return; // paused on purpose; visibilitychange resumes
+    var now = performance.now();
+    if (now - lastBeat > 8000) {
+      lastBeat = now; // don't hammer while still parked
+      try { engine.stop(); } catch (e) { /* gone */ }
+      try { engine.resize(); engine.start(); } catch (e) { /* gone */ }
+      (function beat2() { lastBeat = performance.now(); requestAnimationFrame(beat2); })();
+    }
+  }, 3000);
+
+  /* explicit resume paths: tab restore / window focus / Lively's own handshake */
+  window.addEventListener('pageshow', function () { try { engine.resize(); engine.start(); } catch (e) { /* gone */ } });
+  window.addEventListener('focus', function () { try { if (!document.hidden) engine.start(); } catch (e) { /* gone */ } });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { try { engine.start(); } catch (e) { /* gone */ } }
+  });
+  try {
+    if (window.lively && typeof window.lively.onmessage !== 'undefined') {
+      var prevLively = window.lively.onmessage;
+      window.lively.onmessage = function (ev) {
+        if (ev && (ev.livelyDataEventType === 'resume' || ev.livelyDataEventType === 'unpause')) {
+          try { engine.start(); } catch (e) { /* gone */ }
+        }
+        if (typeof prevLively === 'function') { try { prevLively(ev); } catch (e) { /* gone */ } }
+      };
+    }
+  } catch (e) { /* lively bridge absent */ }
+
   /* handle for devtools / future settings */
   window.haloflux = {
     engine: engine, live: live, params: params,
